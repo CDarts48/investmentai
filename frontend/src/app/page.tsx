@@ -1,7 +1,6 @@
 'use client'
 
 import React, { useState } from 'react';
-import { FaChartLine, FaLaptopCode, FaLayerGroup, FaShieldAlt, FaHistory, FaInfoCircle } from 'react-icons/fa';
 import './code.module.css'; // Corrected import statement
 import Header from './components/header/Header'; // Import the Header component
 import Hero from './components/hero/Hero'; // Import the Hero component
@@ -49,17 +48,9 @@ export default function InvestmentAIPage() {
       if (!recentSearches.includes(query)) {
         setRecentSearches(prev => [query, ...prev.slice(0, 4)]);
       }
-    } catch (error) {
-      setResults('Sorry, there was an error processing your request. Please try again later.');
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleRecentSearch = (search: string) => {
-    setQuery(search);
-    // Optional: Automatically trigger search
-    // setTimeout(() => handleSearch(), 100);
   };
 
   return (
@@ -72,51 +63,6 @@ export default function InvestmentAIPage() {
         loading={loading} 
         results={results} 
       /> {/* Use the Hero component */}
-
-      <section id="features" className="features-section">
-        <h2>Features</h2>
-        <div className="features-list">
-          <div className="feature-item">
-            <FaChartLine size={48} color="#00ccff" />
-            <h3>Market Analysis</h3>
-            <p>Get the latest market insights and trends.</p>
-          </div>
-          <div className="feature-item">
-            <FaLaptopCode size={48} color="#00ccff" />
-            <h3>Tech Outlook</h3>
-            <p>Understand the future of technology investments.</p>
-          </div>
-          <div className="feature-item">
-            <FaLayerGroup size={48} color="#00ccff" />
-            <h3>Portfolio Diversity</h3>
-            <p>Diversify your investments for better returns.</p>
-          </div>
-          <div className="feature-item">
-            <FaShieldAlt size={48} color="#00ccff" />
-            <h3>Safe Investments</h3>
-            <p>Find safe investment options during market volatility.</p>
-          </div>
-        </div>
-      </section>
-
-      <section id="about" className="about-section">
-        <h2>About Us</h2>
-        <p>Investment AI is your trusted partner in making informed investment decisions using advanced AI technology.</p>
-      </section>
-
-      <section id="disclaimer" className="disclaimer-section">
-        <h2>Legal Disclaimer</h2>
-        <p>The information provided by Investment AI is for informational purposes only and does not constitute investment advice. Please consult with a qualified financial advisor before making any investment decisions.</p>
-      </section>
-
-      <section id="contact" className="contact-section">
-        <h2>Contact Us</h2>
-        <p>Have questions? Reach out to us at contact@investmentai.com.</p>
-      </section>
-
-      <footer className="footer">
-        <p>&copy; 2025 Investment AI. All rights reserved.</p>
-      </footer>
     </>
   );
 }
