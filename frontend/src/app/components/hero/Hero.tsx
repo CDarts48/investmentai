@@ -1,17 +1,12 @@
-// filepath: /Users/corey/Desktop/agentkit/frontend/src/app/components/hero/Hero.tsx
+// filepath: /Users/corey/Desktop/investmentai/frontend/src/app/components/hero/Hero.tsx
 import React from 'react';
 import { IoSearch } from 'react-icons/io5';
 import styles from './code.module.css'; // Import the CSS module
+import { useSearch } from './logic.module'; // Import the search logic
 
-interface HeroProps {
-  query: string;
-  setQuery: (query: string) => void;
-  handleSearch: () => void;
-  loading: boolean;
-  results: string | null;
-}
+const Hero: React.FC = () => {
+  const { query, setQuery, loading, results, handleSearch } = useSearch();
 
-const Hero: React.FC<HeroProps> = ({ query, setQuery, handleSearch, loading, results }) => {
   return (
     <section className={styles.heroSection}>
       <div className={styles.heroContent}>
