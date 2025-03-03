@@ -1,7 +1,7 @@
 // filepath: /Users/corey/Desktop/investmentai/frontend/src/app/components/hero/Hero.tsx
 import React from 'react';
 import { IoSearch } from 'react-icons/io5';
-import styles from './code.module.css'; // Import the CSS module
+import styles from './Hero.module.css'; // Import the CSS module
 import { useSearch } from './logic.module'; // Import the search logic
 
 const Hero: React.FC = () => {
