@@ -1,3 +1,6 @@
+# Ignore the llm folder until it is ready to be published
+llm 
+
 # Logs
 logs
 *.log
