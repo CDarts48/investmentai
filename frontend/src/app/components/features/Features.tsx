@@ -1,29 +1,52 @@
-// filepath: /Users/corey/Desktop/investmentai/frontend/src/app/components/features/Features.tsx
 import React from 'react';
-import styles from './Features.module.css'; // Import the CSS module
+import Link from 'next/link';
+import { MdCurrencyBitcoin, MdAnalytics, MdAccountBalance, MdTrendingUp } from 'react-icons/md';
+import styles from './Features.module.css';
+
+const features = [
+  {
+    title: 'Crypto',
+    description: 'Get the latest insights and trends in the cryptocurrency market.',
+    icon: <MdCurrencyBitcoin size={28} color="#007AFF" />,
+    route: '/crypto'
+  },
+  {
+    title: 'Market Analysis',
+    description: 'Understand the current market conditions and future outlook.',
+    icon: <MdAnalytics size={28} color="#007AFF" />,
+    route: '/marketAnalysis'
+  },
+  {
+    title: 'Portfolio',
+    description: 'Manage and diversify your investment portfolio for better returns.',
+    icon: <MdAccountBalance size={28} color="#007AFF" />,
+    route: '/portfolio'
+  },
+  {
+    title: 'Investment Outlook',
+    description: 'Get expert opinions and forecasts on various investment opportunities.',
+    icon: <MdTrendingUp size={28} color="#007AFF" />,
+    route: '/investmentOutlook'
+  },
+];
 
 const Features: React.FC = () => {
   return (
-    <section className={styles.featuresSection}>
-      <div className={styles.featuresList}>
-        <div className={styles.featureItem}>
-          <h3>Crypto</h3>
-          <p>Get the latest insights and trends in the cryptocurrency market.</p>
-        </div>
-        <div className={styles.featureItem}>
-          <h3>Market Analysis</h3>
-          <p>Understand the current market conditions and future outlook.</p>
-        </div>
-        <div className={styles.featureItem}>
-          <h3>Portfolio</h3>
-          <p>Manage and diversify your investment portfolio for better returns.</p>
-        </div>
-        <div className={styles.featureItem}>
-          <h3>Investment Outlook</h3>
-          <p>Get expert opinions and forecasts on various investment opportunities.</p>
-        </div>
-      </div>
-    </section>
+    <div className={styles.container}>
+      {features.map((feature, index) => (
+        <Link href={feature.route} key={index} passHref legacyBehavior>
+          <a className={styles.featureItem}>
+            <div className={styles.iconContainer}>
+              {feature.icon}
+            </div>
+            <div className={styles.textContainer}>
+              <h3 className={styles.title}>{feature.title}</h3>
+              <p className={styles.description}>{feature.description}</p>
+            </div>
+          </a>
+        </Link>
+      ))}
+    </div>
   );
 };
 
