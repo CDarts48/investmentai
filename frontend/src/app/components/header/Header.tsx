@@ -9,7 +9,8 @@ const Header = () => {
         <a href="#features">Features</a>
         <a href="#about">About</a>
         <a href="#contact">Contact</a>
-        <button className={styles.loginButton}>Login/Sign In</button>
+        <button className={styles.loginButton}>Sign Up</button>
+        <button className={styles.loginButton}>Login</button>
       </div>
     </header>
   );
