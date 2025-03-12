@@ -41,6 +41,15 @@
   border-radius: 4px;
 }
 
+.signUpButton {
+  margin-left: 1.5rem;
+  background-color: gold;
+  color: #fff;
+  border: none;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  border-radius: 4px;
+}
 .loginButton:hover {
   background-color: #0056b3;
 }

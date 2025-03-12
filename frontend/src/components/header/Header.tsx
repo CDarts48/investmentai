@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from 'next/link';
 import styles from './code.module.css'; // Import the CSS module
 
 const Header = () => {
@@ -9,8 +10,12 @@ const Header = () => {
         <a href="#features">Features</a>
         <a href="#about">About</a>
         <a href="#contact">Contact</a>
-        <button className={styles.loginButton}>Sign Up</button>
-        <button className={styles.loginButton}>Login</button>
+        <Link href="/signUp">
+        <button className={styles.signUpButton}>Sign Up</button>
+        </Link>
+        <Link href="/logIn">
+          <button className={styles.loginButton}>Login</button>
+        </Link>
       </div>
     </header>
   );

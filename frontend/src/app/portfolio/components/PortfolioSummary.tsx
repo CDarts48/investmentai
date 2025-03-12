@@ -1,6 +1,18 @@
-// filepath: /Users/corey/Desktop/investmentai/frontend/src/app/portfolio/components/PortfolioSummary.tsx
 import React from 'react';
 import { Pie } from 'react-chartjs-2';
+import {
+  Chart as ChartJS,
+  ArcElement,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+} from 'chart.js';
+
+ChartJS.register(ArcElement, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 import { FaArrowUp, FaArrowDown } from 'react-icons/fa';
 import styles from './PortfolioSummary.module.css';
 

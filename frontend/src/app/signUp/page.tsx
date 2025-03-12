@@ -1,79 +1,21 @@
+'use client';
+
 import React, { useState } from "react";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { MdAnalytics, MdPerson, MdEmail, MdLock } from "react-icons/md";
-import { toast } from "sonner-native";
-import styles from "./page.module.css";
+import styles from "./signUp.module.css";
+import Link from "next/link";
 
-export default function SignupScreen() {
-  const router = useRouter();
-  const [formData, setFormData] = useState({
-    fullName: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-  });
-  const [errors, setErrors] = useState({});
-  const [isLoading, setIsLoading] = useState(false);
+type IconType = "person" | "email" | "lock" | "lock-outline";
 
-  const validateForm = () => {
-    const newErrors: any = {};
+interface InputFieldProps extends React.InputHTMLAttributes<HTMLInputElement> {
+  label: string;
+  icon: IconType;
+  error?: string;
+}
 
-    if (!formData.fullName.trim()) {
-      newErrors.fullName = "Full name is required";
-    }
-
-    if (!formData.email.trim()) {
-      newErrors.email = "Email is required";
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = "Email is invalid";
-    }
-
-    if (!formData.password) {
-      newErrors.password = "Password is required";
-    } else if (formData.password.length < 8) {
-      newErrors.password = "Password must be at least 8 characters";
-    }
-
-    if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = "Passwords do not match";
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleSignup = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (!validateForm()) {
-      toast.error("Please fix the errors in the form");
-      return;
-    }
-
-    setIsLoading(true);
-    try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      toast.success("Account created successfully!");
-      router.push("/"); // navigate to home page (adjust as needed)
-    } catch (error) {
-      toast.error("Failed to create account. Please try again.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // InputField component using HTML
-  const InputField = ({
-    label,
-    icon,
-    error,
-    ...props
-  }: {
-    label: string;
-    icon: "person" | "email" | "lock" | "lock-outline";
-    error?: string;
-    [x: string]: any;
-  }) => {
+const InputField: React.FC<InputFieldProps> = React.memo(
+  ({ label, icon, error, autoFocus, ...props }) => {
     const renderIcon = () => {
       switch (icon) {
         case "person":
@@ -90,9 +32,12 @@ export default function SignupScreen() {
 
     return (
       <div className={styles.inputContainer}>
+        {/* Render the label so that it's used */}
+        <label className={styles.inputLabel}>{label}</label>
         <div className={styles.inputWrapper}>
           {renderIcon()}
           <input
+            autoFocus={autoFocus}
             className={`${styles.input} ${error ? styles.inputError : ""}`}
             placeholder={props.placeholder}
             {...props}
@@ -101,6 +46,61 @@ export default function SignupScreen() {
         {error && <p className={styles.errorText}>{error}</p>}
       </div>
     );
+  }
+);
+
+InputField.displayName = "InputField";
+
+export default function SignupScreen() {
+  const router = useRouter();
+  const [formData, setFormData] = useState({
+    fullName: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isLoading, setIsLoading] = useState(false);
+
+  const validateForm = (): boolean => {
+    const newErrors: Record<string, string> = {};
+
+    if (!formData.fullName.trim()) {
+      newErrors.fullName = "Full name is required";
+    }
+    if (!formData.email.trim()) {
+      newErrors.email = "Email is required";
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.email = "Email is invalid";
+    }
+    if (!formData.password) {
+      newErrors.password = "Password is required";
+    } else if (formData.password.length < 8) {
+      newErrors.password = "Password must be at least 8 characters";
+    }
+    if (formData.password !== formData.confirmPassword) {
+      newErrors.confirmPassword = "Passwords do not match";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSignup = async () => {
+    if (!validateForm()) {
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      // Simulate API call
+      await new Promise<void>((resolve) => setTimeout(resolve, 1500));
+      router.push("/"); // navigate to home page (adjust as needed)
+    } catch {
+      // Optionally, show an error message to your user here.
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -112,14 +112,18 @@ export default function SignupScreen() {
           Join InvestmentAI and start your investment journey
         </p>
       </header>
-      <form className={styles.form} onSubmit={handleSignup}>
+      {/* Using a div instead of a form */}
+      <div className={styles.formContainer}>
         <InputField
           label="Full Name"
           icon="person"
           placeholder="Enter your full name"
           value={formData.fullName}
-          onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-          error={(errors as any).fullName}
+          autoFocus={true}
+          onChange={(e) =>
+            setFormData({ ...formData, fullName: e.target.value })
+          }
+          error={errors.fullName}
         />
 
         <InputField
@@ -128,8 +132,10 @@ export default function SignupScreen() {
           placeholder="Enter your email"
           type="email"
           value={formData.email}
-          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-          error={(errors as any).email}
+          onChange={(e) =>
+            setFormData({ ...formData, email: e.target.value })
+          }
+          error={errors.email}
         />
 
         <InputField
@@ -138,8 +144,10 @@ export default function SignupScreen() {
           placeholder="Create a password"
           type="password"
           value={formData.password}
-          onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-          error={(errors as any).password}
+          onChange={(e) =>
+            setFormData({ ...formData, password: e.target.value })
+          }
+          error={errors.password}
         />
 
         <InputField
@@ -151,20 +159,22 @@ export default function SignupScreen() {
           onChange={(e) =>
             setFormData({ ...formData, confirmPassword: e.target.value })
           }
-          error={(errors as any).confirmPassword}
+          error={errors.confirmPassword}
         />
-
-        <button
-          type="submit"
-          className={`${styles.button} ${isLoading ? styles.buttonDisabled : ""}`}
-          disabled={isLoading}
-        >
-          {isLoading ? "Creating Account..." : "Sign Up"}
-        </button>
-      </form>
-      <div className={styles.loginLink} onClick={() => router.push("/login")}>
+      </div>
+      <button
+        onClick={handleSignup}
+        className={`${styles.button} ${isLoading ? styles.buttonDisabled : ""}`}
+        disabled={isLoading}
+      >
+        {isLoading ? "Creating Account..." : "Sign Up"}
+      </button>
+      <div className={styles.loginLink} onClick={() => router.push("/logIn")}>
         <p className={styles.loginText}>
-          Already have an account? <span className={styles.loginTextBold}>Log In</span>
+          Already have an account?{" "}
+          <Link href="/logIn">
+            <span className={styles.loginTextBold}>Log In</span>
+          </Link>
         </p>
       </div>
     </div>

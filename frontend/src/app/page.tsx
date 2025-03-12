@@ -2,10 +2,10 @@
 
 import React from 'react';
 import './code.module.css'; 
-import Header from './components/header/Header'; 
-import Hero from './components/hero/Hero'; 
-import Features from './components/features/Features'; 
-import Footer from './components/footer/Footer'; 
+import Header from '../components/header/Header'; 
+import Hero from '../components/hero/Hero'; 
+import Features from '../components/features/Features'; 
+import Footer from '../components/footer/Footer'; 
 
 export default function InvestmentAIPage() {
   return (

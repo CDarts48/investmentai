@@ -8,14 +8,29 @@ import PortfolioSummary from "./components/PortfolioSummary";
 import TraditionalInvestments from "./components/TraditionalInvestments";
 import CryptoInvestments from "./components/CryptoInvestments";
 import SocialStats from "./components/SocialStats";
-import RecentActivity from "./components/RecentActivity";
-import { PortfolioData, ProfileData } from "../types/types";
+// Import RecentActivity from the appropriate path – adjust this if your folder structure changes.
+import RecentActivity from "../portfolio/RecentActivity";
+import { PortfolioData, ProfileData } from "./types";
 import styles from "./HomeScreen.module.css";
+import Image from "next/image";
 
 export default function HomeScreen() {
   const [profileData, setProfileData] = useState<ProfileData | null>(null);
   const [portfolioData, setPortfolioData] = useState<PortfolioData | null>(null);
   const [loading, setLoading] = useState(true);
+
+  // Fallback summary object that matches the PortfolioSummary type
+  const defaultSummary = {
+    totalValue: 0,
+    returns: 0,
+    todayChange: 0,
+    allocation: {
+      stocks: 0,
+      crypto: 0,
+      bonds: 0,
+      cash: 0,
+    },
+  };
 
   useEffect(() => {
     // Simulate data loading
@@ -40,11 +55,6 @@ export default function HomeScreen() {
       {/* Profile Header */}
       <div className={styles.profileHeader}>
         <div className={styles.profileImageContainer}>
-          <img
-            src="https://api.a0.dev/assets/image?text=professional%20profile%20photo%20of%20a%20successful%20investor&seed=123"
-            alt="Profile"
-            className={styles.profileImage}
-          />
           <div className={styles.badgeContainer}>
             <FaCheckCircle size={24} color="#3b82f6" />
           </div>
@@ -60,12 +70,21 @@ export default function HomeScreen() {
       </div>
 
       {/* Social Stats */}
-      <SocialStats stats={profileData?.socialStats || {}} />
+      <SocialStats
+        stats={
+          profileData?.socialStats || {
+            followers: 0,
+            following: 0,
+            posts: 0,
+            insights: 0,
+          }
+        }
+      />
 
       {/* Portfolio Summary */}
       <div className={styles.sectionContainer}>
         <h3 className={styles.sectionTitle}>Portfolio Overview</h3>
-        <PortfolioSummary summary={portfolioData?.summary || {}} />
+        <PortfolioSummary summary={portfolioData?.summary || defaultSummary} />
       </div>
 
       {/* Growth Trend Chart */}
@@ -156,7 +175,7 @@ const mockProfileData: ProfileData = {
   location: "New York, USA",
   bio: "Investor & financial analyst with 8+ years of experience. Passionate about crypto and tech stocks.",
   avatar:
-    "https://api.a0.dev/assets/image?text=professional%20profile%20photo%20of%20a%20successful%20investor&seed=123",
+    "https://api.a0.dev/assets/image?text=professional%20profile%20photo?of=professional%20profile%20photo%20of%20a%20successful%20investor&seed=123",
   socialStats: {
     followers: 2458,
     following: 542,

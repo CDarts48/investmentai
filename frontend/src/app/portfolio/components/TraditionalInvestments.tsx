@@ -8,7 +8,7 @@ import {
   FaCaretUp,
   FaCaretDown,
 } from 'react-icons/fa';
-import { InvestmentItem } from '../types/types';
+import { InvestmentItem } from '../../portfolio/types';
 import styles from './TraditionalInvestments.module.css';
 
 interface TraditionalInvestmentsProps {
