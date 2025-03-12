@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { MdAnalytics, MdPerson, MdEmail, MdLock } from "react-icons/md";
 import styles from "./signUp.module.css";
 import Link from "next/link";
+// Use the core Auth0 export so you can redirect to the Universal Login page.
 import { loginWithRedirect } from "@auth0/nextjs-auth0";
 
 type IconType = "person" | "email" | "lock" | "lock-outline";
@@ -22,28 +23,16 @@ const InputField: React.FC<InputFieldProps> = React.memo(
       switch (icon) {
         case "person":
           return (
-            <MdPerson
-              size={20}
-              color="#007AFF"
-              className={styles.inputIcon}
-            />
+            <MdPerson size={20} color="#007AFF" className={styles.inputIcon} />
           );
         case "email":
           return (
-            <MdEmail
-              size={20}
-              color="#007AFF"
-              className={styles.inputIcon}
-            />
+            <MdEmail size={20} color="#007AFF" className={styles.inputIcon} />
           );
         case "lock":
         case "lock-outline":
           return (
-            <MdLock
-              size={20}
-              color="#007AFF"
-              className={styles.inputIcon}
-            />
+            <MdLock size={20} color="#007AFF" className={styles.inputIcon} />
           );
         default:
           return null;
@@ -72,30 +61,44 @@ InputField.displayName = "InputField";
 
 export default function SignupScreen() {
   const router = useRouter();
-  // With Auth0, you generally use Universal Login so the form state doesn’t get sent to your local API.
-  // However, if you want to collect some extra fields you can do so and pass them as query parameters.
+
   const [formData, setFormData] = useState({
-    fullName: "",
+    Name: "",
     email: "",
     userName: "",
     password: "",
     reenterPassword: "",
-    // Password fields can be omitted if you want Auth0 to manage them.
-    // If you collect them, be sure to send them securely.
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
 
-    if (!formData.fullName.trim()) {
-      newErrors.fullName = "Full name is required";
+    if (!formData.Name.trim()) {
+      newErrors.Name = "Name is required";
     }
     if (!formData.email.trim()) {
       newErrors.email = "Email is required";
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
       newErrors.email = "Email is invalid";
     }
+    if (!formData.userName.trim()) {
+      newErrors.userName = "Username is required";
+    }
+    if (!formData.password) {
+      newErrors.password = "Password is required";
+    }
+    if (!formData.reenterPassword) {
+      newErrors.reenterPassword = "Re-enter password is required";
+    }
+    if (
+      formData.password &&
+      formData.reenterPassword &&
+      formData.password !== formData.reenterPassword
+    ) {
+      newErrors.reenterPassword = "Passwords do not match";
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -105,7 +108,7 @@ export default function SignupScreen() {
       return;
     }
     try {
-      // Redirect to Auth0 Universal Login with the "signup" screen hint.
+      // Redirect to Auth0's Universal Login with the "signup" screen hint.
       router.push("/api/auth/login?screen_hint=signup");
     } catch (error) {
       console.error("Auth0 signup failed:", error);
@@ -123,15 +126,14 @@ export default function SignupScreen() {
       </header>
       <div className={styles.formContainer}>
         <InputField
-          label="Full Name"
+          label="Name"
           icon="person"
-          placeholder="Enter your full name"
-          value={formData.fullName}
-          autoFocus={true}
+          placeholder="Enter your name"
+          value={formData.Name}
           onChange={(e) =>
-            setFormData({ ...formData, fullName: e.target.value })
+            setFormData({ ...formData, Name: e.target.value })
           }
-          error={errors.fullName}
+          error={errors.Name}
         />
         <InputField
           label="Email"
@@ -144,7 +146,7 @@ export default function SignupScreen() {
           }
           error={errors.email}
         />
-          <InputField
+        <InputField
           label="Username"
           icon="person"
           placeholder="Enter your username"
@@ -152,32 +154,32 @@ export default function SignupScreen() {
           onChange={(e) =>
             setFormData({ ...formData, userName: e.target.value })
           }
-          error={errors.userName} 
-        /><InputField
-        label="Password"
-        icon="lock"
-        placeholder="Enter your password"
-        type="password"
-        value={formData.password}
-        onChange={(e) =>
-          setFormData({ ...formData, password: e.target.value })
-        }
-        error={errors.password}
-      />
-      <InputField
-        label="Re-enter Password"
-        icon="lock"
-        placeholder="Re-enter your password"
-        type="password"
-        value={formData.reenterPassword}
-        onChange={(e) => setFormData({ ...formData, reenterPassword: e.target.value })}
-        error={errors.reenterPassword}
-      />
+          error={errors.userName}
+        />
+        <InputField
+          label="Password"
+          icon="lock"
+          placeholder="Enter your password"
+          type="password"
+          value={formData.password}
+          onChange={(e) =>
+            setFormData({ ...formData, password: e.target.value })
+          }
+          error={errors.password}
+        />
+        <InputField
+          label="Re-enter Password"
+          icon="lock"
+          placeholder="Re-enter your password"
+          type="password"
+          value={formData.reenterPassword}
+          onChange={(e) =>
+            setFormData({ ...formData, reenterPassword: e.target.value })
+          }
+          error={errors.reenterPassword}
+        />
       </div>
-      <button
-        onClick={handleSignup}
-        className={styles.button}
-      >
+      <button onClick={handleSignup} className={styles.button}>
         Sign Up with Auth0
       </button>
       <div className={styles.loginLink} onClick={() => router.push("/logIn")}>
