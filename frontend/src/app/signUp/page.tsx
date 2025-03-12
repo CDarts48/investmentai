@@ -5,10 +5,12 @@ import { useRouter } from "next/navigation";
 import { MdAnalytics, MdPerson, MdEmail, MdLock } from "react-icons/md";
 import styles from "./signUp.module.css";
 import Link from "next/link";
+import { loginWithRedirect } from "@auth0/nextjs-auth0";
 
 type IconType = "person" | "email" | "lock" | "lock-outline";
 
-interface InputFieldProps extends React.InputHTMLAttributes<HTMLInputElement> {
+interface InputFieldProps
+  extends React.InputHTMLAttributes<HTMLInputElement> {
   label: string;
   icon: IconType;
   error?: string;
@@ -19,12 +21,30 @@ const InputField: React.FC<InputFieldProps> = React.memo(
     const renderIcon = () => {
       switch (icon) {
         case "person":
-          return <MdPerson size={20} color="#007AFF" className={styles.inputIcon} />;
+          return (
+            <MdPerson
+              size={20}
+              color="#007AFF"
+              className={styles.inputIcon}
+            />
+          );
         case "email":
-          return <MdEmail size={20} color="#007AFF" className={styles.inputIcon} />;
+          return (
+            <MdEmail
+              size={20}
+              color="#007AFF"
+              className={styles.inputIcon}
+            />
+          );
         case "lock":
         case "lock-outline":
-          return <MdLock size={20} color="#007AFF" className={styles.inputIcon} />;
+          return (
+            <MdLock
+              size={20}
+              color="#007AFF"
+              className={styles.inputIcon}
+            />
+          );
         default:
           return null;
       }
@@ -32,7 +52,6 @@ const InputField: React.FC<InputFieldProps> = React.memo(
 
     return (
       <div className={styles.inputContainer}>
-        {/* Render the label so that it's used */}
         <label className={styles.inputLabel}>{label}</label>
         <div className={styles.inputWrapper}>
           {renderIcon()}
@@ -53,14 +72,18 @@ InputField.displayName = "InputField";
 
 export default function SignupScreen() {
   const router = useRouter();
+  // With Auth0, you generally use Universal Login so the form state doesn’t get sent to your local API.
+  // However, if you want to collect some extra fields you can do so and pass them as query parameters.
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
+    userName: "",
     password: "",
-    confirmPassword: "",
+    reenterPassword: "",
+    // Password fields can be omitted if you want Auth0 to manage them.
+    // If you collect them, be sure to send them securely.
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [isLoading, setIsLoading] = useState(false);
 
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
@@ -73,15 +96,6 @@ export default function SignupScreen() {
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
       newErrors.email = "Email is invalid";
     }
-    if (!formData.password) {
-      newErrors.password = "Password is required";
-    } else if (formData.password.length < 8) {
-      newErrors.password = "Password must be at least 8 characters";
-    }
-    if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = "Passwords do not match";
-    }
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -90,16 +104,11 @@ export default function SignupScreen() {
     if (!validateForm()) {
       return;
     }
-
-    setIsLoading(true);
     try {
-      // Simulate API call
-      await new Promise<void>((resolve) => setTimeout(resolve, 1500));
-      router.push("/"); // navigate to home page (adjust as needed)
-    } catch {
-      // Optionally, show an error message to your user here.
-    } finally {
-      setIsLoading(false);
+      // Redirect to Auth0 Universal Login with the "signup" screen hint.
+      router.push("/api/auth/login?screen_hint=signup");
+    } catch (error) {
+      console.error("Auth0 signup failed:", error);
     }
   };
 
@@ -112,7 +121,6 @@ export default function SignupScreen() {
           Join InvestmentAI and start your investment journey
         </p>
       </header>
-      {/* Using a div instead of a form */}
       <div className={styles.formContainer}>
         <InputField
           label="Full Name"
@@ -125,7 +133,6 @@ export default function SignupScreen() {
           }
           error={errors.fullName}
         />
-
         <InputField
           label="Email"
           icon="email"
@@ -137,37 +144,41 @@ export default function SignupScreen() {
           }
           error={errors.email}
         />
-
-        <InputField
-          label="Password"
-          icon="lock"
-          placeholder="Create a password"
-          type="password"
-          value={formData.password}
+          <InputField
+          label="Username"
+          icon="person"
+          placeholder="Enter your username"
+          value={formData.userName}
           onChange={(e) =>
-            setFormData({ ...formData, password: e.target.value })
+            setFormData({ ...formData, userName: e.target.value })
           }
-          error={errors.password}
-        />
-
-        <InputField
-          label="Confirm Password"
-          icon="lock-outline"
-          placeholder="Confirm your password"
-          type="password"
-          value={formData.confirmPassword}
-          onChange={(e) =>
-            setFormData({ ...formData, confirmPassword: e.target.value })
-          }
-          error={errors.confirmPassword}
-        />
+          error={errors.userName} 
+        /><InputField
+        label="Password"
+        icon="lock"
+        placeholder="Enter your password"
+        type="password"
+        value={formData.password}
+        onChange={(e) =>
+          setFormData({ ...formData, password: e.target.value })
+        }
+        error={errors.password}
+      />
+      <InputField
+        label="Re-enter Password"
+        icon="lock"
+        placeholder="Re-enter your password"
+        type="password"
+        value={formData.reenterPassword}
+        onChange={(e) => setFormData({ ...formData, reenterPassword: e.target.value })}
+        error={errors.reenterPassword}
+      />
       </div>
       <button
         onClick={handleSignup}
-        className={`${styles.button} ${isLoading ? styles.buttonDisabled : ""}`}
-        disabled={isLoading}
+        className={styles.button}
       >
-        {isLoading ? "Creating Account..." : "Sign Up"}
+        Sign Up with Auth0
       </button>
       <div className={styles.loginLink} onClick={() => router.push("/logIn")}>
         <p className={styles.loginText}>
